@@ -1,0 +1,518 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: My tutorial project
+  description: An app to manage Tutorials
+host: localhost:8080
+basePath: /
+tags:
+  - name: Tutorials
+    description: API for tutorial
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  JWT:
+    type: apiKey
+    in: header
+    name: Authorization
+
+paths:
+  /tutorials:
+    get:
+      tags:
+        - Tutorials
+      summary: Get all tutorials in system
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Tutorial"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+        security:
+         - JWT: []
+
+    post:
+      summary: Create tutorial in system
+      tags:
+        - Tutorials
+      parameters:
+        - name: Tutorials
+          in: body
+          description: Tutorial that we want to create
+          schema:
+            $ref: "#/definitions/TutorialCreateBody"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: New tutorials is created
+          schema:
+            $ref: "#/definitions/Tutorial"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/400Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+        security:
+         - JWT: []
+
+  /tutorials/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID of the tutorial
+        type: string
+    delete:
+      summary: Delete tutorial with given ID
+      tags:
+        - Tutorials
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: "#/definitions/200Response"
+        "404":
+          description: "Tutorial not found"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+        security:
+         - JWT: []
+
+    patch:
+      summary: Update tutorial with give ID
+      tags:
+        - Tutorials
+      parameters:
+        - name: Tutorials
+          in: body
+          description: Tutorial that we want to Update
+          schema:
+            $ref: "#/definitions/TutorialCreateBody"
+      responses:
+        "204":
+          description: Tutorial is updated
+          schema:
+            $ref: "#/definitions/204Response"
+        "400":
+          description: "Invalid Tutorial Id"
+          schema:
+            $ref: "#/definitions/400Response"
+        "404":
+          description: "Bad request"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+        security:
+         - JWT: []
+
+    get:
+      tags:
+        - Tutorials
+      summary: Get tutorial By ID
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/Tutorial"
+        "404":
+          description: "Tutorial not found"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+        security:
+         - JWT: []
+
+  /users:
+    post:
+      tags:
+        - User
+      summary: Register user into system
+      parameters:
+        - name: createUser
+          in: body
+          description: Create user
+          schema:
+            $ref: "#/definitions/UserCreateBody"
+      responses:
+        "201":
+          description: created user
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/400Response"
+        "409":
+          description: "Conflict"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: user id
+        type: string
+    patch:
+      tags:
+        - User
+      summary: User updated into system
+      parameters:
+        - name: updateUser
+          in: body
+          required: true
+          description: Update user
+          schema:
+            $ref: "#/definitions/UserUpdateBody"
+      responses:
+        "204":
+          description: user is updated
+          schema:
+            $ref: "#/definitions/204Response"
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/400Response"
+        "409":
+          description: "Conflict"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+      security:
+        - JWT: []
+
+  /oauth/token:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      parameters:
+        - name: Login
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/PostOauthTokenBody"
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/OauthToken"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+      security:
+        - JWT: []
+
+  /oauth/reset-password:
+    patch:
+      summary: Change your password
+      tags:
+        - Authentication
+      parameters:
+        - name: User
+          in: body
+          description: Update password using old password
+          schema:
+            $ref: '#/definitions/UserResetPassword'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/200Response'
+        '400':
+          description: 'Bad Request'
+          schema:
+            $ref: '#/definitions/400Response'
+        '500':
+          description: 'Internal Server Error'
+          schema:
+            $ref: '#/definitions/500Response'
+      security:
+        - JWT: []
+
+  /oauth/forgot-password:
+    post:
+      summary: Send otp to your email
+      tags:
+        - Authentication
+      parameters:
+        - name: Email
+          in: body
+          description: Email of the user
+          schema:
+            $ref: '#/definitions/UserForgotPasswordOtp'
+      responses:
+        '201':
+          description: OK
+          schema:
+            $ref: '#/definitions/201Response'
+        '400':
+          description: 'Bad Request'
+          schema:
+            $ref: '#/definitions/400Response'
+        '500':
+          description: 'Internal Server Error'
+          schema:
+            $ref: '#/definitions/500Response' 
+
+    patch:
+      summary: Reset password using otp.
+      tags:
+        - Authentication
+      parameters:
+        - name: User
+          in: body
+          description: User password reset though id using ott
+          schema:
+            $ref: "#/definitions/UserResetPasswordOtp"
+      responses:
+        "204":
+          description: password is updated
+        "400":
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/400Response"
+        "404":
+          description: "Token not found"
+          schema:
+            $ref: "#/definitions/404Response"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/500Response"
+
+definitions:
+  Tutorial:
+    required:
+      - _id
+      - title
+      - description
+      - createdAt
+      - updatedAt
+      - published
+    properties:
+      _id:
+        type: string
+        format: uuid
+        uniqueItems: true
+      title:
+        type: string
+      description:
+        type: string
+      published:
+        type: boolean
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+
+  User:
+    required:
+      - _id
+      - firstName
+      - lastName
+      - email
+      - password
+      - createdAt
+      - updatedAt
+    properties:
+      _id:
+        type: string
+        uniqueItems: true
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+
+  PostOauthTokenBody:
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+
+  OauthToken:
+    required: -token
+    properties:
+      token:
+        type: string
+
+  TutorialCreateBody:
+    required:
+      - title
+      - description
+      - published
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      published:
+        type: boolean
+
+  UserCreateBody:
+    required:
+      - firstName
+      - lastName
+      - email
+      - password
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+
+  UserUpdateBody:
+    required:
+      - firstName
+      - lastName
+      - email
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+
+  UserResetPassword:
+    required:
+      - currentPassword
+      - newPassword
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        type: string
+
+  UserResetPasswordOtp:
+    required:
+      - token
+      - newPassword
+    properties:
+      token:
+        type: string
+      newPassword:
+        type: string
+
+  UserForgotPasswordOtp:
+    required:
+      - email
+    properties:
+      email:
+        type: string
+
+  200Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  201Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  204Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  400Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  401Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  404Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  409Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  500Response:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        
